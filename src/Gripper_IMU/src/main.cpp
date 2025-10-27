@@ -85,7 +85,7 @@ void setup() {
   Wire.begin();
   delay(2000);
 
-    // Inicialitza IMU (amb DMP)
+  // Inicialitza IMU (amb DMP)
   imu.Install();
 
   connectToWiFi();
@@ -94,6 +94,12 @@ void setup() {
 
   pinMode(PIN_S1, INPUT);
   pinMode(PIN_S2, INPUT);
+
+  // --- Configurar PWM para el motor de vibración ---
+  // Canal 0, frecuencia de 5 kHz, resolución de 8 bits
+  ledcSetup(0, 5000, 8);
+  // Asociar el pin del motor de vibración al canal 0
+  ledcAttachPin(vibrationPin, 0);
 }
 
 void loop() {
