@@ -102,8 +102,38 @@ void setup() {
   ledcAttachPin(vibrationPin, 0);
 }
 
+void receiveTorquesUDP() {
+  int packetSize = udp.parsePacket();  // Ver si llegó un paquete UDP
+  if (packetSize) {
+    char packetBuffer[255];
+    int len = udp.read(packetBuffer, 255);
+    if (len > 0) {
+      packetBuffer[len] = 0; // Final de cadena
+    }
+
+    Serial.print("Received UDP packet: ");
+    Serial.println(packetBuffer);
+
+    // --- Parsear los valores de torque recibidos ---
+    float Torque_roll1 = 0, Torque_pitch = 0, Torque_yaw = 0;
+    sscanf(packetBuffer, "%f %f %f", &Torque_roll1, &Torque_pitch, &Torque_yaw);
+
+    // --- Controlar el motor de vibración según el torque total ---
+    float totalTorque = Torque_roll1 + Torque_pitch + Torque_yaw;
+
+    // Convertir torque a valor PWM (0–255)
+    int vibrationValue = constrain(totalTorque * 2.5, 0, 255);  // Ajusta el factor 2.5 si la vibración es muy débil o fuerte
+    ledcWrite(0, vibrationValue);  // Aplica el PWM al canal 0 (motor de vibración)
+
+    Serial.print("Vibration motor value: ");
+    Serial.println(vibrationValue);
+  }
+}
+
+
 void loop() {
   updateOrientation();
   sendOrientationUDP();
+  receiveTorquesUDP();
   delay(10);
 }
