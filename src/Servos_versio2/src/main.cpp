@@ -115,18 +115,30 @@ float getTorque(float& sum, int analogPin, float& previous) {
 }
 
 void moveServos() {
-  roll = Gri_roll;
-  OldValueRoll = roll;
-  pitch = Gri_pitch;
-  OldValuePitch = pitch;
-  yaw = Gri_yaw;
-  OldValueYaw = yaw;
+  // Aplicar angles RPY relatius a 90º
+  float rollAngle  = 90 + Gri_roll;   // Roll respecte a posició inicial
+  float pitchAngle = 90 + Gri_pitch;  // Pitch respecte a posició inicial
+  float yawAngle   = 90 + Gri_yaw;    // Yaw relatiu (independent del Nord)
 
+  // Limitar per seguretat (0–180º)
+  rollAngle  = constrain(rollAngle, 0, 180);
+  pitchAngle = constrain(pitchAngle, 0, 180);
+  yawAngle   = constrain(yawAngle, 0, 180);
+
+  // Control manual dels servos de roll quan S1 està premut (obrir)
   float delta = 0;
   if (s1 == 0) {
-    delta = 40;
+    delta = 40;  // Ajusta segons necessitis
     Serial.println("S1 premut → Obrint");
   }
+
+  // Aplicar moviments als 4 servos
+  servo_roll1.write(rollAngle + delta);
+  servo_roll2.write(180 - rollAngle); // Roll invers per l'altre servo
+  servo_pitch.write(pitchAngle);
+  servo_yaw.write(yawAngle);
+}
+
 
   servo_roll1.write(Gri_roll + delta);
   servo_roll2.write(180 - Gri_roll);
