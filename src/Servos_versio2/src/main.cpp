@@ -43,6 +43,7 @@ float sumRoll1 = 0, sumRoll2 = 0, sumPitch = 0, sumYaw = 0;
 float OldValueRoll = 0, OldValuePitch = 0, OldValueYaw = 0;
 float roll = 0, pitch = 0, yaw = 0;
 int s1 = 1, s2 = 1;
+float DeltaYaw = 0, OldDeltaYaw = 0;
 
 void connectToWiFi() {
   Serial.print("Connecting to Wi-Fi");
@@ -115,15 +116,7 @@ float getTorque(float& sum, int analogPin, float& previous) {
 }
 
 void moveServos() {
-  // Aplicar angles RPY relatius a 90º
-  float rollAngle  = 90 + Gri_roll;   // Roll respecte a posició inicial
-  float pitchAngle = 90 + Gri_pitch;  // Pitch respecte a posició inicial
-  float yawAngle   = 90 + Gri_yaw;    // Yaw relatiu (independent del Nord)
-
-  // Limitar per seguretat (0–180º)
-  rollAngle  = constrain(rollAngle, 0, 180);
-  pitchAngle = constrain(pitchAngle, 0, 180);
-  yawAngle   = constrain(yawAngle, 0, 180);
+  
 
   // Control manual dels servos de roll quan S1 està premut (obrir)
   float delta = 0;
@@ -133,18 +126,40 @@ void moveServos() {
   }
 
   // Aplicar moviments als 4 servos
-  servo_roll1.write(rollAngle + delta);
-  servo_roll2.write(180 - rollAngle); // Roll invers per l'altre servo
-  servo_pitch.write(pitchAngle);
-  servo_yaw.write(yawAngle);
-}
+  if (Gri_roll >= 0 & Gri_roll <= 90) {
+    servo_roll1.write(90 + Gri_roll + delta);
+    servo_roll2.write(90 - Gri_roll);
+  }
+  else if (Gri_roll < 360 & Gri_roll >= 270) {
+  servo_roll1.write(90 - (Gri_roll - 360) + delta);
+  servo_roll2.write(90 + (Gri_roll - 360));
+  } 
+  else {
+  printf("No correct roll value received");
+  }
+
+  if (Gri_pitch >= 0 & Gri_pitch <= 90) {
+  servo_pitch.write(90 + pitch);
+  }
+    else if (Gri_pitch < 360 & Gri_pitch >= 270) {
+    servo_pitch.write(90 - (360 - pitch));
+  }
+    else {
+    printf("No correct pitch value received");
+  }
+
+  DeltaYaw = Gri_yaw - OldValueYaw;
+  DeltaYaw = DeltaYaw + OldDeltaYaw;
+
+  OldValueYaw = Gri_yaw;
+  OldDeltaYaw = DeltaYaw;
+
+  servo_yaw.write(90 + DeltaYaw);
 
 
-  servo_roll1.write(Gri_roll + delta);
-  servo_roll2.write(180 - Gri_roll);
-  servo_pitch.write(pitch);
-  servo_yaw.write(yaw);
 }
+// Al valr q ens dona la imu li hem d restar el allyaw. Hem danar creant variables intermitges on anem acumulant el delta
+
 
 void setup() {
   Serial.begin(115200);

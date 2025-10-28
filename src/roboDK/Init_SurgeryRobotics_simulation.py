@@ -138,8 +138,11 @@ def move_robot(robot, gripper, needle, text_label):
                     
         if current_Gripper_rpy:
             g_roll = Gripper_rpy.get("roll")
+            g_roll= g_roll - endo_roll
             g_pitch = Gripper_rpy.get("pitch")
+            g_pitch = g_pitch - e_pitch
             g_yaw = Gripper_rpy.get("yaw")
+            g_yaw = g_yaw - endo_yaw
             s1 = Gripper_rpy.get("s1")
             s2 = Gripper_rpy.get("s2")
             #print(f"Gripper: {g_roll}, {g_pitch}, {g_yaw}")
