@@ -117,7 +117,6 @@ float getTorque(float& sum, int analogPin, float& previous) {
 
 void moveServos() {
   
-
   // Control manual dels servos de roll quan S1 està premut (obrir)
   float delta = 0;
   if (s1 == 0) {
@@ -126,28 +125,29 @@ void moveServos() {
   }
 
   // Aplicar moviments als 4 servos
-  if (Gri_roll >= 0 & Gri_roll <= 90) {
+  if (Gri_roll >= 0 && Gri_roll <= 90) {
     servo_roll1.write(90 + Gri_roll + delta);
     servo_roll2.write(90 - Gri_roll);
-  }
-  else if (Gri_roll < 360 & Gri_roll >= 270) {
-  servo_roll1.write(90 - (Gri_roll - 360) + delta);
-  servo_roll2.write(90 + (Gri_roll - 360));
+  } 
+  else if (Gri_roll < 360 && Gri_roll >= 270) {
+    servo_roll1.write(90 - (Gri_roll - 360) + delta);
+    servo_roll2.write(90 + (Gri_roll - 360));
   } 
   else {
-  printf("No correct roll value received");
+    Serial.println("No correct roll value received");
   }
 
-  if (Gri_pitch >= 0 & Gri_pitch <= 90) {
-  servo_pitch.write(90 + pitch);
-  }
-    else if (Gri_pitch < 360 & Gri_pitch >= 270) {
-    servo_pitch.write(90 - (360 - pitch));
-  }
-    else {
-    printf("No correct pitch value received");
+  if (Gri_pitch >= 0 && Gri_pitch <= 90) {
+    servo_pitch.write(90 + Gri_pitch);
+  } 
+  else if (Gri_pitch < 360 && Gri_pitch >= 270) {
+    servo_pitch.write(90 - (360 - Gri_pitch));
+  } 
+  else {
+    Serial.println("No correct pitch value received");
   }
 
+  // Càlcul del moviment del yaw
   DeltaYaw = Gri_yaw - OldValueYaw;
   DeltaYaw = DeltaYaw + OldDeltaYaw;
 
@@ -155,8 +155,6 @@ void moveServos() {
   OldDeltaYaw = DeltaYaw;
 
   servo_yaw.write(90 + DeltaYaw);
-
-
 }
 // Al valr q ens dona la imu li hem d restar el allyaw. Hem danar creant variables intermitges on anem acumulant el delta
 
