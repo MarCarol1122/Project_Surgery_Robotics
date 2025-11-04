@@ -105,7 +105,7 @@ void recieveTorquesUDP() {
       }
 
       const char* device = doc["device"];
-      if (strcmp(device, "G1_Servos") == 0) {
+      if (strcmp(device, "G2_Servos") == 0) {
         Torque_roll1 = doc["t_roll1"];
         Torque_roll2 = doc["t_roll2"];
         Torque_pitch = doc["t_pitch"];
@@ -129,7 +129,7 @@ void recieveTorquesUDP() {
   // Convert torque to PWM value (0-255)
   int vibrationValue = constrain(TorqueMax * 10, 0, 255); // Adjust the scaling factor as needed
 
-  ledcWrite(vibrationPin, vibrationValue); // Set the PWM value for the vibration motor
+  ledcWrite(0, vibrationValue); // Set the PWM value for the vibration motor
 
   Serial.print("Vibration motor value: ");
   Serial.println(vibrationValue); 
